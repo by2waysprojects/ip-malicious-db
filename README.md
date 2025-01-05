@@ -1,6 +1,3 @@
-Aquí está el README actualizado, reflejando que los nodos tienen los campos `id` (la IP) y `country`, y que los datos se cargan mediante una petición a la ruta 
-# 🌍 ip-malicious-db: Malicious IP Database with Neo4j
-
 `ip-malicious-db` is a Go service designed to load and manage malicious IPs and IP ranges by country. The service retrieves IP data from GitHub, specifically the [FireHOL IP blocklists](https://github.com/firehol/blocklist-ipsets), and stores it in a Neo4j database as nodes with the fields `id` (IP address) and `country` (ISO 3166-1 alpha-2 country code).
 
 ## 🚀 Features
