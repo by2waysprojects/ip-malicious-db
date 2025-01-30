@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	services "ip-malicious-db/services/model"
 	"net/http"
 	"strings"
 )
@@ -37,7 +36,7 @@ func NewGithubIpService() *GithubIpService {
 	return &GithubIpService{}
 }
 
-func fetchCountryIPs(countryCode string) ([]services.Ip, error) {
+func fetchCountryIPs(countryCode string) ([]string, error) {
 	url := fmt.Sprintf(url, countryCode)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -49,7 +48,7 @@ func fetchCountryIPs(countryCode string) ([]services.Ip, error) {
 		return nil, fmt.Errorf("non-OK HTTP status: %s", resp.Status)
 	}
 
-	var ips []services.Ip
+	var ips []string
 	reader := bufio.NewReader(resp.Body)
 	for {
 		line, err := reader.ReadString('\n')
@@ -61,15 +60,15 @@ func fetchCountryIPs(countryCode string) ([]services.Ip, error) {
 		}
 		line = strings.TrimSpace(line)
 		if line != "" && !strings.HasPrefix(line, "#") { // Ignore comments or empty lines
-			ips = append(ips, services.Ip(line))
+			ips = append(ips, line)
 		}
 	}
 	return ips, nil
 }
 
 // fetchAllCountryIPs fetches IPs for all countries.
-func (g *GithubIpService) FetchAllCountryIPs() (map[services.Country][]services.Ip, error) {
-	allIPs := make(map[services.Country][]services.Ip)
+func (g *GithubIpService) FetchAllCountryIPs() (map[string][]string, error) {
+	allIPs := make(map[string][]string)
 
 	for _, countryCode := range countryCodes {
 		ips, err := fetchCountryIPs(countryCode)
@@ -77,7 +76,7 @@ func (g *GithubIpService) FetchAllCountryIPs() (map[services.Country][]services.
 			fmt.Printf("Error fetching IPs for %s: %v\n", countryCode, err)
 			continue
 		}
-		allIPs[services.Country(countryCode)] = ips
+		allIPs[countryCode] = ips
 	}
 	return allIPs, nil
 }
