@@ -9,13 +9,13 @@ func NewMaliciousIpService(dbService *Neo4jService, githubIpService *GithubIpSer
 	return &MaliciousIpService{Neo4jService: dbService, GithubIpService: githubIpService}
 }
 
-func (s *MaliciousIpService) SaveGithubMaliciousIp() error {
+func (s *MaliciousIpService) SaveGithubMaliciousIp(limit int) error {
 	countryIps, err := s.GithubIpService.FetchAllCountryIPs()
 	if err != nil {
 		return err
 	}
 
-	if err := s.Neo4jService.SaveMaliciousIps(countryIps); err != nil {
+	if err := s.Neo4jService.SaveMaliciousIps(countryIps, limit); err != nil {
 		return err
 	}
 	return nil

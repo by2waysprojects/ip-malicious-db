@@ -10,6 +10,7 @@ import (
 
 type Neo4jService struct {
 	Driver neo4j.DriverWithContext
+	Limit  int
 }
 
 func NewNeo4jService(uri, username, password string) *Neo4jService {
@@ -24,14 +25,20 @@ func (s *Neo4jService) Close() {
 	s.Driver.Close(context.Background())
 }
 
-func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string) error {
+func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string, limit int) error {
 	ctx := context.Background()
-	// Process each record and insert it into Neo4j
+	processed := 0
+
 	session := s.Driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close(ctx)
 
 	for country, ips := range countryIps {
 		for _, ip := range ips {
+
+			if processed >= limit {
+				break
+			}
+
 			malicous_ip := services.MaliciousIpNeo4j{ID: ip, Country: country, Action: services.Alert}
 			query := `
 			CREATE (i:Ip {
@@ -48,6 +55,10 @@ func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string) error {
 			if err != nil {
 				log.Printf("Error inserting record from Ip %s: %v", ip, err)
 			}
+		}
+
+		if processed >= limit {
+			break
 		}
 	}
 
