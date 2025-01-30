@@ -43,7 +43,8 @@ func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string, limit in
 			query := `
 			CREATE (i:Ip {
 				id: $id,
-				country: $country
+				country: $country,
+				action: $action,
 			})
 		`
 			// Execute the query
