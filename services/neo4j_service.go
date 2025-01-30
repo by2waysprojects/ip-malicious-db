@@ -55,6 +55,8 @@ func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string, limit in
 			if err != nil {
 				log.Printf("Error inserting record from Ip %s: %v", ip, err)
 			}
+
+			processed++
 		}
 
 		if processed >= limit {
