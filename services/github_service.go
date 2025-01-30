@@ -67,8 +67,9 @@ func fetchCountryIPs(countryCode string) ([]string, error) {
 }
 
 // fetchAllCountryIPs fetches IPs for all countries.
-func (g *GithubIpService) FetchAllCountryIPs() (map[string][]string, error) {
+func (g *GithubIpService) FetchAllCountryIPs(limit int) (map[string][]string, error) {
 	allIPs := make(map[string][]string)
+	processed := 0
 
 	for _, countryCode := range countryCodes {
 		ips, err := fetchCountryIPs(countryCode)
@@ -77,6 +78,11 @@ func (g *GithubIpService) FetchAllCountryIPs() (map[string][]string, error) {
 			continue
 		}
 		allIPs[countryCode] = ips
+
+		processed += len(ips)
+		if processed >= limit {
+			break
+		}
 	}
 	return allIPs, nil
 }

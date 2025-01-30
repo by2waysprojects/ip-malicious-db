@@ -24,6 +24,8 @@ func (mc *MaliciousIpController) LoadMaliciousIps(w http.ResponseWriter, r *http
 		limit = 10000
 	}
 
+	log.Printf("Loading limit %d", limit)
+
 	err := mc.MaliciousIpService.SaveGithubMaliciousIp(limit)
 	if err != nil {
 		http.Error(w, "Failed saving ips", http.StatusInternalServerError)

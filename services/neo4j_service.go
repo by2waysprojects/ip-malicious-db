@@ -25,19 +25,13 @@ func (s *Neo4jService) Close() {
 	s.Driver.Close(context.Background())
 }
 
-func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string, limit int) error {
+func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string) error {
 	ctx := context.Background()
-	processed := 0
-
 	session := s.Driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close(ctx)
 
 	for country, ips := range countryIps {
 		for _, ip := range ips {
-
-			if processed >= limit {
-				break
-			}
 
 			malicous_ip := services.MaliciousIpNeo4j{ID: ip, Country: country, Action: services.Alert}
 			query := `
@@ -56,12 +50,6 @@ func (s *Neo4jService) SaveMaliciousIps(countryIps map[string][]string, limit in
 			if err != nil {
 				log.Printf("Error inserting record from Ip %s: %v", ip, err)
 			}
-
-			processed++
-		}
-
-		if processed >= limit {
-			break
 		}
 	}
 
