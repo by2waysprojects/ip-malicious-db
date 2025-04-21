@@ -15,3 +15,10 @@ func RegisterRoutes(router *mux.Router, maliciousIpController *controllers.Malic
 		}
 	}).Methods("GET")
 }
+
+func Alive(router *mux.Router, maliciousIpController *controllers.MaliciousIpController) {
+	router.HandleFunc("/health-module", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	}).Methods("GET")
+}
